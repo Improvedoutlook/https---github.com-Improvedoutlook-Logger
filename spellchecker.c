@@ -259,8 +259,25 @@ void SpellChecker_Check(SpellChecker *sc, const char *text) {
     // Reset misspelled list at start of every pass
     sc->misspelled.count = 0;
     
-    // Handle empty text
-    if (!text || strlen(text) == 0) {
+    // Detect empty or whitespace-only text and reset state
+    if (!text || text[0] == '\0') {
+        sc->misspelled.count = 0;
+        return;
+    }
+    
+    // Check if text is only whitespace
+    const char *checkPtr = text;
+    BOOL onlyWhitespace = TRUE;
+    while (*checkPtr) {
+        if (!isspace((unsigned char)*checkPtr)) {
+            onlyWhitespace = FALSE;
+            break;
+        }
+        checkPtr++;
+    }
+    
+    if (onlyWhitespace) {
+        sc->misspelled.count = 0;
         return;
     }
     
